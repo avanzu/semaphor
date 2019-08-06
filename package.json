@@ -1,0 +1,25 @@
+{
+  "name": "semaphor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "test": "NODE_ENV=development npm run eslint && NODE_ENV=test npm run jest",
+    "eslint": "eslint lib/. --config .eslintrc.json",
+    "jest": "jest --config jest.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "debug": "^4.1.1",
+    "eslint": "^5.16.0",
+    "jest": "^24.7.1"
+  },
+  "dependencies": {
+    "data.task": "^3.1.2"
+  }
+}
