@@ -1,2 +1,4 @@
-const EventEmitter = require('events')
-const Task         = require('data.task')
+const Intent = require('./lib/intent')
+const Semaphor = require('./lib/semaphor')
+
+module.exports = { Intent, Semaphor }
