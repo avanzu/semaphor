@@ -13,52 +13,106 @@ As time goes by that particular API gets more and more popular and  someone deci
 
 Since nothing about the API itself changes, your code has effectively no reason to change. 
 
-Having an intent in place will save your bacon.
-
-__basic functionality example__
 ```js 
-// src/api/hello-world.js
-const app = require('./app')
-const httpGet = require('./your-http-module-of-choice')
-const sayHello = locale => 
-  app.signal('AboutToSayHello', { 
-    headers: {
-      'content-type'    : 'application/json',
-      'accept-language' : locale
-    }})
-     .toPromise() 
-     .then(options => 
-        httpGet('http://my.api.com/hello', options))
-     
+// src/api.js
+
+module.exports = app => {
+
+    // the original function does not provide an "authorization" header
+    
+    const headers = { 'content-type' : 'application/json' }
+
+    
+    const sayHello = url => 
+        app // give control to the outside world
+            .signal('AboutToSayHello', { headers }) 
+            .toPromise()
+            .then(apiCallHello(url))
+
+    const sayGoodBye = url => 
+        app // give control to the outside world
+            .signal('AboutToSayBye', { headers }) 
+            .toPromise()
+            .then(apiCallGoodBye(url))
+
+            
+    return { sayHello, sayGoodBye }
+}
+
 ```
+Having an intent in place will save your bacon.
+```js 
 
-__extend on basic functionality__
-```js
-// src/intents/hello.js
+// src/events.js 
 
-const app      = require('./app')
-const {Intent} = require('semaphor')
-const storage  = require('./some-promise-based-token-storage')
+const { fromPromise }  = require('semaphor/lib/intent')
 
-// authenticate :: string -> Intent
-const authenticate = key => storage.find(key).then(Intent.of).catch(Intent.rejected)
+/**
+ * fake storage for demonstration purposes
+ */
+const storage = ({
+    find: key => 
+        key == 'hello-auth' 
+            ? Promise.resolve('1e54b332-b123-4187-a85c-6d082236bff6') 
+            : Promise.reject(`invalid key ${key}`)
+})
 
-// addAuthenticationHeader :: context -> Intent(context)
+/**
+ * Transforms the storage promise into an Intent
+ * 
+ * @summary authenticate :: String a -> Intent(b)
+ */
+const authenticate = key => fromPromise(storage.find(key))
+
+/**
+ * Adds (or overwrites) the authorization string to the headers key
+ * 
+ * @summary addAuthHeaderTo :: Object a -> String b -> Object c 
+ */
+const addAuthHeaderTo = ({headers, ...rest}) => authorization => ({
+    headers: { ...headers, authorization }, ...rest
+})
+
+/**
+ * Tries to authenticate using 'hello-auth'.
+ * This will always resolve and adds the auth header to the given context.
+ * 
+ * @summary addAuthenticationHeader :: Object a -> Intent(a)
+ */
 const addAuthenticationHeader = context => 
-  authenticate('hello-auth').map( authorization => {
-    Object.assign(context.headers, {authorization})
-    return context
-  })
+    authenticate('hello-auth').map(addAuthHeaderTo(context))
 
 
-app.on('AboutToSayHello', intent => intent.chain( addAuthenticationHeader ))
+module.exports = app => {
+    app.on('AboutToSayHello', intent => intent.chain(addAuthenticationHeader))
+}
 ```
-
-
 
 ### Prevent something from happening
+Going back to the previous example, the `sayGoodBye` call will also be rejected due to the authentication. But, as of yet, the API call will be done anyways, although it is sure to fail. 
 
+We could use the same trick as before but let's further assume that the authorization for this call is different to the first one.
 
+```js 
 
-### Recover from errors
+//src/events.js 
+
+// ....
+
+/**
+ * Tries to authenticate using 'bye-auth'.
+ * This will always be rejected and therefore prevent the acutal API call.
+ * @summary addInvalidAuthenticationHeader :: Object a -> Intent(a)
+ */    
+const addInvalidAuthenticationHeader = context  => 
+    authenticate('bye-auth').map(addAuthHeaderTo(context))
+
+module.exports = app => {
+
+    app.on('AboutToSayHello', intent => intent.chain(addAuthenticationHeader))
+    app.on('AboutToSayBye',   intent => intent.chain(addInvalidAuthenticationHeader))
+    
+}
+```
+Since retrieving a viable authentication for `'bye-auth'` is impossible, we are chaining a rejected intent. This, in turn, will prevent the actual API call (unless you catch it beforehand) and provide a (probably) more informative error message.
 
