@@ -15,7 +15,7 @@ const apiCallHello = url => ({headers}) => new Promise((resolve, reject) =>
  * Demonstrates another arbitrary API call 
  * which rejects anything without an authorization header.
  * 
- * @summary apiCallHello :: String url -> Object options -> Promise
+ * @summary apiCallGoodBye :: String url -> Object options -> Promise
  */        
 const apiCallGoodBye = url => ({headers}) => new Promise((resolve, reject) => 
     headers.authorization 
