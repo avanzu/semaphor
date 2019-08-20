@@ -45,7 +45,7 @@ Having an intent in place will save your bacon.
 
 // src/events.js 
 
-const { fromPromise }  = require('deed-poll/lib/intent')
+const { fromPromise }  = require('lisigi/lib/intent')
 
 /**
  * fake storage for demonstration purposes

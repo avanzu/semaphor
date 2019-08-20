@@ -1,2 +1,2 @@
-const Semaphor = require('../lib/deed-poll')
+const Semaphor = require('../lib/lisigi')
 module.exports = new Semaphor()

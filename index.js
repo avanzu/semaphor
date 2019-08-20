@@ -1,4 +1,4 @@
 const Intent = require('./lib/intent')
-const DeedPoll = require('./lib/deed-poll')
+const Lisigi = require('./lib/lisigi')
 
-module.exports = { Intent, DeedPoll }
+module.exports = { Intent, Lisigi }
