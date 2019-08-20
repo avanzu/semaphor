@@ -1,4 +1,4 @@
-# Semaphor
+# Deed poll
 Event based middleware alternative.
 
 ## About intents
@@ -45,7 +45,7 @@ Having an intent in place will save your bacon.
 
 // src/events.js 
 
-const { fromPromise }  = require('semaphor/lib/intent')
+const { fromPromise }  = require('deed-poll/lib/intent')
 
 /**
  * fake storage for demonstration purposes
