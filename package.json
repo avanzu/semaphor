@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avanzu/semaphor.git"
+  },
   "files": [
     "lib/"
   ],
@@ -17,9 +21,9 @@
   "devDependencies": {
     "debug": "^4.1.1",
     "eslint": "^5.16.0",
-    "jest": "^24.7.1"
+    "jest": "^24.9.0"
   },
   "dependencies": {
-    "data.task": "^3.1.2"
+    "fp-types": "^1.0.1"
   }
 }
