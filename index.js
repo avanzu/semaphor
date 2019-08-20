@@ -1,4 +1,4 @@
 const Intent = require('./lib/intent')
-const Semaphor = require('./lib/semaphor')
+const DeedPoll = require('./lib/deed-poll')
 
-module.exports = { Intent, Semaphor }
+module.exports = { Intent, DeedPoll }
